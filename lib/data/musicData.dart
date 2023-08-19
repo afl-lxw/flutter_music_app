@@ -16,3 +16,11 @@ Map<String, String> musicText = {
   "00:60": "我们的爱就像是流星落下",
   "01:00": "随烟火消失的火花",
 };
+
+List<Map<String, dynamic>> musicData = [
+  {'user': '薛之谦', 'musicName': '/assets/music/我好像在哪见过你.mp3'},
+  {'user': '薛之谦', 'musicName': '/assets/music/那是你离开北京的生活.mp3'},
+  {'user': '马吟吟', 'musicName': '/assets/music/溯.mp3'},
+  {'user': '葛东琪', 'musicName': '/assets/music/悬溺.mp3'},
+  {'user': 'Alan Walker', 'musicName': '/assets/music/fade.mp3'},
+];

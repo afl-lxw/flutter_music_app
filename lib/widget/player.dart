@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_app/data/color.dart';
 import 'package:flutter_music_app/data/images.dart';
@@ -17,6 +17,15 @@ class PlayerWidget extends StatefulWidget {
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
+  late dynamic duration;
+  final AudioPlayer player = AudioPlayer();
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
@@ -104,9 +113,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         ),
       )),
       GestureDetector(
-          onTap: () {
+          onTap: () async {
+            print('---------play');
             musicStatus
                 .setNewStatus(musicStatus.getStatus == 'on' ? 'off' : 'on');
+            await player.setAsset('/assets/music/悬溺.mp3');
+            await player.play();
           },
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
