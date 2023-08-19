@@ -117,8 +117,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             print('---------play');
             musicStatus
                 .setNewStatus(musicStatus.getStatus == 'on' ? 'off' : 'on');
-            await player.setAsset('/assets/music/悬溺.mp3');
-            await player.play();
+            try {
+              await player.setAsset('assets/music/悬溺.mp3');
+              await player.play();
+            } catch (e) {
+              print('An error occurred while playing the audio: $e');
+            }
           },
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),

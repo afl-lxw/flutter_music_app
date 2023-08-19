@@ -1,1 +1,19 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+# 引入 CocoaPods 配置文件
+# 此处的路径可能需要根据你的项目结构做相应调整
+# 注意修改为你实际的路径
+# 可能类似：$(SRCROOT)/../iOS/Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig
+# 或者：$(SRCROOT)/Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig
+# 或者类似路径
+# 如果你有多个 build 配置，需要在每个配置中都添加
+# 注意斜杠方向要用 / ，不要用 \
+# 注意路径中不要有空格或特殊字符
+# 此处的 $(SRCROOT) 表示 Xcode 项目文件所在的目录
+# 如果有不同的路径配置，需要适当调整
+# 这里只是一个示例，实际路径请根据你的项目结构进行调整
+# 如果没有 `Flutter/Release.xcconfig` 文件，可以手动创建
+# 如果有 Debug 配置，同样需要在 Debug.xcconfig 文件中添加相同的引入
+# 例如：#include "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+# 或者直接在 #include "Generated.xcconfig" 之后添加
+#include "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
