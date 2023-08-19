@@ -1,4 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_music_app/data/color.dart';
+import 'package:flutter_music_app/data/images.dart';
+import 'package:flutter_music_app/provider/musicStatus.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class PlayContainerWidget extends StatefulWidget {
   const PlayContainerWidget({super.key});
@@ -7,9 +14,338 @@ class PlayContainerWidget extends StatefulWidget {
   State<PlayContainerWidget> createState() => _PlayContainerWidgetState();
 }
 
-class _PlayContainerWidgetState extends State<PlayContainerWidget> {
+class _PlayContainerWidgetState extends State<PlayContainerWidget>
+    with SingleTickerProviderStateMixin {
+  bool _isLyricsVisible = false;
+
+  late Animation<double> _animation;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+
+    //启动动画(正向执行)
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    double playWidth = MediaQuery.of(context).size.width;
+    double playHeight = MediaQuery.of(context).size.height;
+
+    // return AnimatedAlign(
+    //   alignment: Alignment.bottomCenter,
+    //   duration: Duration(milliseconds: 300),
+    //   child: GestureDetector(
+    //     onVerticalDragDown: (details) =>
+    //         {print('onVerticalDragDown ${details}')},
+    //     onVerticalDragUpdate: (details) {
+    //       print('primaryDelta ${details.primaryDelta}');
+    //       print('localPosition ${details.localPosition}');
+
+    //       // 监听手指垂直滑动事件
+    //       if (_isLyricsVisible) {
+    //         // 如果歌词区域可见，处理歌词滑动
+    //         // 您可以在这里实现歌词滑动的逻辑
+    //       } else {
+    //         // 如果歌词区域不可见，处理页面返回跳转
+    //         if (details.primaryDelta! > 20) {
+    //           // 手指向下拖动
+    //           Navigator.pop(context);
+    //         }
+    //       }
+    //     },
+    //     onVerticalDragEnd: (details) => {print('onVerticalDragEnd ${details}')},
+    //     child: _Play_Scaffold(playHeight, playWidth),
+    //   ),
+    // );
+
+    return DraggableScrollableSheet(
+      initialChildSize: 1, // 初始高度占整个屏幕的比例
+      minChildSize: 0.8, // 最小高度占整个屏幕的比例
+      builder: (BuildContext context, ScrollController scrollController) {
+        return _Play_Scaffold(
+          playHeight,
+          playWidth,
+        );
+      },
+    );
+  }
+
+  Scaffold _Play_Scaffold(double playHeight, double playWidth) {
+    return Scaffold(
+        body: Stack(
+      children: [
+        Container(
+          height: playHeight,
+          width: playWidth,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(userImg), fit: BoxFit.cover)),
+        ),
+        // Positioned.fill(
+        ClipRect(
+            child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50), // 模糊效果
+          child: ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              const Color.fromARGB(255, 65, 65, 65).withOpacity(0.1), // 颜色混合效果
+              BlendMode.srcATop,
+            ),
+            child: Container(
+              width: playWidth,
+              height: playHeight,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5), // 背景颜色
+              ),
+            ),
+          ),
+        )),
+        // ),
+        Column(
+          children: [
+            const SizedBox(
+              height: 70,
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 20),
+              width: playWidth,
+              alignment: Alignment.center,
+              child: Container(
+                height: 5,
+                width: 50,
+                decoration: BoxDecoration(
+                    color: Colors.grey[500],
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+            ), // 顶部留白
+
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                // color: Colors.white.withOpacity(0.2),
+                alignment: Alignment.center,
+                child: FadeTransition(
+                    opacity: _controller,
+                    child: Hero(
+                      tag: 'playImg',
+                      child: Container(
+                          width: 280,
+                          height: 280,
+                          decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromARGB(255, 65, 65, 65)
+                                      .withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(20),
+                              image:
+                                  DecorationImage(image: AssetImage(userImg)))),
+                    )),
+              ),
+            ),
+            _Albums(),
+            GestureDetector(
+              child: Container(
+                height: 270,
+                padding: const EdgeInsets.only(left: 30, right: 30),
+                child: PlayContainer(context),
+              ),
+            ),
+            const SizedBox(height: 24), // 底部留白
+          ],
+        ),
+      ],
+    ));
+  }
+
+  Container _Albums() {
+    return Container(
+      padding: const EdgeInsets.only(left: 30, right: 30),
+      height: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Hero(
+                  tag: 'PlayName',
+                  child: Text(
+                    'Faded(Restruing)',
+                    style: TextStyle(
+                        color: tFontColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18),
+                  ),
+                ),
+                Text('Alan Walker',
+                    style: TextStyle(
+                        color: tFontColorGrey,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16)),
+              ],
+            ),
+          ),
+          Container(
+            height: 30,
+            width: 30,
+            child: const Icon(
+              FontAwesomeIcons.circle,
+              color: Color.fromARGB(255, 155, 155, 155),
+              size: 26,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Column PlayContainer(BuildContext context) {
+    double playWidth = MediaQuery.of(context).size.width;
+    final musicStatus = Provider.of<MusicStatus>(context);
+    return Column(
+      children: [
+        Container(
+          height: 7,
+          width: playWidth,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Color.fromARGB(255, 157, 157, 157)),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              '1:33',
+              style: TextStyle(fontSize: 12, color: tFontColorGrey),
+            ),
+            Text(
+              '-2:04',
+              style: TextStyle(fontSize: 12, color: tFontColorGrey),
+            )
+          ],
+        ),
+        Container(
+          padding:
+              const EdgeInsets.only(left: 50, right: 50, top: 50, bottom: 50),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Icon(
+                  FontAwesomeIcons.backward,
+                  size: 32,
+                  color: Color.fromARGB(255, 232, 232, 232),
+                ),
+                GestureDetector(
+                    onTap: () {
+                      musicStatus.setNewStatus(
+                          musicStatus.getStatus == 'on' ? 'off' : 'on');
+                    },
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder: (child, animation) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      child: Hero(
+                          tag: 'play',
+                          child: Icon(
+                            key: ValueKey<String>(musicStatus.getStatus),
+                            musicStatus.getStatus == 'on'
+                                ? FontAwesomeIcons.play
+                                : FontAwesomeIcons.pause,
+                            size: 34,
+                            color: const Color.fromARGB(255, 232, 232, 232),
+                          )),
+                    )),
+                const Hero(
+                  tag: 'next',
+                  child: Icon(
+                    FontAwesomeIcons.forward,
+                    size: 32,
+                    color: Color.fromARGB(255, 232, 232, 232),
+                  ),
+                )
+              ]),
+        ),
+        Container(
+          child: Row(
+            children: [
+              const Icon(
+                FontAwesomeIcons.volumeDown,
+                size: 20,
+                color: Color.fromARGB(255, 157, 157, 157),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: Container(
+                height: 6,
+                width: playWidth,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Color.fromARGB(255, 157, 157, 157)),
+              )),
+              const SizedBox(width: 10),
+              const Icon(
+                FontAwesomeIcons.volumeUp,
+                size: 16,
+                color: Color.fromARGB(255, 157, 157, 157),
+              )
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.only(top: 30, left: 50, right: 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(
+                FontAwesomeIcons.fire,
+                color: Color.fromARGB(255, 157, 157, 157),
+              ),
+              Icon(
+                FontAwesomeIcons.fire,
+                color: Color.fromARGB(255, 157, 157, 157),
+              ),
+              Icon(
+                FontAwesomeIcons.fire,
+                color: Color.fromARGB(255, 157, 157, 157),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
   }
 }

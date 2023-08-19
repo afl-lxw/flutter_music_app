@@ -22,9 +22,9 @@ class Routing extends StatefulWidget {
 class _RoutingState extends State<Routing> {
   List<Widget> routing = [
     const Library(),
-    const RadioWidget(),
-    const Search(),
     const Trending(),
+    const Search(),
+    const RadioWidget(),
     const Setting(),
   ];
 
@@ -100,24 +100,22 @@ class _RoutingState extends State<Routing> {
                     )),
               ),
 
-              // Positioned(
-              //   bottom: 90,
-              //   left: 0, // 左侧偏移量
-              //   right: 0, // 右侧偏移量
-              //   child: Container(
-              //     height: 10, // 阴影高度
-              //     decoration: BoxDecoration(
-              //       boxShadow: [
-              //         BoxShadow(
-              //           color: Colors.black.withOpacity(0.3),
-              //           offset: const Offset(0, 1), // 垂直偏移
-              //           blurRadius: 5, // 模糊半径
-              //           spreadRadius: 0, // 扩散半径
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
+              Positioned(
+                bottom: 92,
+                left: 10, // 左侧偏移量
+                right: 10, // 右侧偏移量
+                child: Container(
+                  height: 2, // 阴影高度
+                  decoration: BoxDecoration(boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      spreadRadius: 5,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ]),
+                ),
+              ),
 
               const Positioned(
                   left: 10, right: 10, bottom: 95, child: PlayerWidget()),
