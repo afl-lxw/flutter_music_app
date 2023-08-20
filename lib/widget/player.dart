@@ -8,6 +8,8 @@ import 'package:flutter_music_app/widget/myClipper.dart';
 import 'package:flutter_music_app/widget/play/playContainer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_music_app/getx/music/musicStatus.dart';
+import 'package:get/get.dart';
 
 class PlayerWidget extends StatefulWidget {
   const PlayerWidget({super.key});
@@ -30,6 +32,15 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget build(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
 
+    return GetBuilder<MusicStatusX>(builder: (musicStatusx) {
+      return Obx(() {
+        return _guestureSelf(context, displayWidth, musicStatusx);
+      });
+    });
+  }
+
+  GestureDetector _guestureSelf(
+      BuildContext context, double displayWidth, MusicStatusX musicStatusx) {
     return GestureDetector(
         onTap: () => {
               // Navigator.of(context).push(_createRoute())
@@ -59,12 +70,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                       offset: Offset(0, 3),
                     ),
                   ]),
-              child: _PlayRow(context)),
+              child: _PlayRow(context, musicStatusx)),
         ));
   }
 
-  Row _PlayRow(BuildContext context) {
-    final musicStatus = Provider.of<MusicStatus>(context);
+  Row _PlayRow(BuildContext context, MusicStatusX musicStatusx) {
+    // final musicStatus = Provider.of<MusicStatus>(context);
 
     return Row(children: [
       Hero(
@@ -114,34 +125,33 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       )),
       GestureDetector(
           onTap: () async {
-            print('---------play');
-            musicStatus
-                .setNewStatus(musicStatus.getStatus == 'on' ? 'off' : 'on');
-            try {
-              await player.setAsset('assets/music/悬溺.mp3');
-              await player.play();
-            } catch (e) {
-              print('An error occurred while playing the audio: $e');
+            if (musicStatusx.getStatus == 'off') {
+              await musicStatusx.play();
+            } else {
+              await musicStatusx.pause();
             }
           },
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            transitionBuilder: (child, animation) {
-              return ScaleTransition(
-                scale: animation,
-                child: child,
-              );
-            },
-            child: Hero(
-                tag: 'play',
-                child: Icon(
-                  key: ValueKey<String>(musicStatus.getStatus),
-                  musicStatus.getStatus == 'on'
-                      ? FontAwesomeIcons.play
-                      : FontAwesomeIcons.pause,
-                  color: tFontColor,
-                )),
-          )),
+              duration: const Duration(milliseconds: 100),
+              transitionBuilder: (child, animation) {
+                return ScaleTransition(
+                  scale: animation,
+                  child: child,
+                );
+              },
+              child:
+                  //  Hero(
+                  //     tag: 'play',
+                  //     child:
+                  Icon(
+                key: ValueKey<RxString>(musicStatusx.getStatus),
+                musicStatusx.getStatus == 'on'
+                    ? FontAwesomeIcons.pause
+                    : FontAwesomeIcons.play,
+                color: tFontColor,
+              )
+              // ),
+              )),
       const SizedBox(width: 15),
       const Hero(
           tag: 'next',

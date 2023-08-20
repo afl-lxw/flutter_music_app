@@ -2,14 +2,27 @@ import 'package:just_audio/just_audio.dart';
 import 'package:flutter/foundation.dart';
 
 class MusicStatus extends ChangeNotifier {
-  String _musicStatus = 'on'; // on   off
+  String _musicStatus = 'off'; // on   off
+  late AudioPlayer _player; // Declare the _player variable
 
-  AudioPlayer _player = new AudioPlayer();
+  MusicStatus() {
+    _player = AudioPlayer(); // Initialize the player in the constructor
+  }
 
   String get getStatus => _musicStatus;
   AudioPlayer get getPlay => _player;
 
-  void setNewStatus(i) {
+  Future<void> play() async {
+    await getPlay.play();
+    await setNewStatus('on');
+  }
+
+  Future<void> pause() async {
+    await getPlay.pause();
+    await setNewStatus('off');
+  }
+
+  Future<void> setNewStatus(i) async {
     _musicStatus = i;
     notifyListeners();
   }

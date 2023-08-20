@@ -1,14 +1,22 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+// import 'package:provider/provider.dart';
+
 import 'package:flutter_music_app/data/color.dart';
 import 'package:flutter_music_app/data/images.dart';
+import 'package:flutter_music_app/getx/music/musicStatus.dart';
 import 'package:flutter_music_app/provider/musicStatus.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 class PlayContainerWidget extends StatefulWidget {
-  const PlayContainerWidget({super.key});
+  const PlayContainerWidget({
+    Key? key,
+    // required this.musicStatusX,
+  }) : super(key: key);
+  // final MusicStatusX musicStatusX;
 
   @override
   State<PlayContainerWidget> createState() => _PlayContainerWidgetState();
@@ -80,15 +88,15 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
       initialChildSize: 1, // 初始高度占整个屏幕的比例
       minChildSize: 0.8, // 最小高度占整个屏幕的比例
       builder: (BuildContext context, ScrollController scrollController) {
-        return _Play_Scaffold(
-          playHeight,
-          playWidth,
-        );
+        return GetBuilder<MusicStatusX>(builder: (musicStatusx) {
+          return _Play_Scaffold(playHeight, playWidth, musicStatusx);
+        });
       },
     );
   }
 
-  Scaffold _Play_Scaffold(double playHeight, double playWidth) {
+  Scaffold _Play_Scaffold(
+      double playHeight, double playWidth, MusicStatusX musicStatusx) {
     return Scaffold(
         body: Stack(
       children: [
@@ -164,12 +172,12 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                     )),
               ),
             ),
-            _Albums(),
+            _Albums(musicStatusx),
             GestureDetector(
               child: Container(
                 height: 270,
                 padding: const EdgeInsets.only(left: 30, right: 30),
-                child: PlayContainer(context),
+                child: PlayContainer(context, musicStatusx),
               ),
             ),
             const SizedBox(height: 24), // 底部留白
@@ -179,7 +187,9 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
     ));
   }
 
-  Container _Albums() {
+  Container _Albums(MusicStatusX musicStatusx) {
+    // final musicStatus = Provider.of<MusicStatus>(context);
+
     return Container(
       padding: const EdgeInsets.only(left: 30, right: 30),
       height: 100,
@@ -191,18 +201,18 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Hero(
                   tag: 'PlayName',
                   child: Text(
-                    'Faded(Restruing)',
-                    style: TextStyle(
+                    ' ${musicStatusx.getStatus}',
+                    style: const TextStyle(
                         color: tFontColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 18),
                   ),
                 ),
-                Text('Alan Walker',
+                const Text('Alan Walker',
                     style: TextStyle(
                         color: tFontColorGrey,
                         fontWeight: FontWeight.w500,
@@ -224,9 +234,9 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
     );
   }
 
-  Column PlayContainer(BuildContext context) {
+  Column PlayContainer(BuildContext context, MusicStatusX musicStatusx) {
     double playWidth = MediaQuery.of(context).size.width;
-    final musicStatus = Provider.of<MusicStatus>(context);
+    // final musicStatus = Provider.of<MusicStatus>(context);
     return Column(
       children: [
         Container(
@@ -265,29 +275,35 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                   color: Color.fromARGB(255, 232, 232, 232),
                 ),
                 GestureDetector(
-                    onTap: () {
-                      musicStatus.setNewStatus(
-                          musicStatus.getStatus == 'on' ? 'off' : 'on');
+                    onTap: () async {
+                      musicStatusx.getStatus == 'off'
+                          ? await musicStatusx.play()
+                          : await musicStatusx.pause();
+
+                      print(' ----> ${musicStatusx.getStatus} ');
                     },
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 500),
-                      transitionBuilder: (child, animation) {
-                        return ScaleTransition(
-                          scale: animation,
-                          child: child,
-                        );
-                      },
-                      child: Hero(
-                          tag: 'play',
-                          child: Icon(
-                            key: ValueKey<String>(musicStatus.getStatus),
-                            musicStatus.getStatus == 'on'
-                                ? FontAwesomeIcons.play
-                                : FontAwesomeIcons.pause,
-                            size: 34,
-                            color: const Color.fromARGB(255, 232, 232, 232),
-                          )),
-                    )),
+                        duration: const Duration(milliseconds: 100),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          );
+                        },
+                        child:
+                            // Hero(
+                            //   tag: 'play',
+                            //   child:
+                            Icon(
+                          key: ValueKey<RxString>(musicStatusx.getStatus),
+                          musicStatusx.getStatus == 'on'
+                              ? FontAwesomeIcons.pause
+                              : FontAwesomeIcons.play,
+                          size: 34,
+                          color: const Color.fromARGB(255, 232, 232, 232),
+                        )
+                        // );
+                        )),
                 const Hero(
                   tag: 'next',
                   child: Icon(
