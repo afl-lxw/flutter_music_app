@@ -17,10 +17,22 @@ Map<String, String> musicText = {
   "01:00": "随烟火消失的火花",
 };
 
-List<Map<String, dynamic>> musicData = [
-  {'user': '薛之谦', 'musicName': '/assets/music/我好像在哪见过你.mp3'},
-  {'user': '薛之谦', 'musicName': '/assets/music/那是你离开北京的生活.mp3'},
-  {'user': '马吟吟', 'musicName': '/assets/music/溯.mp3'},
-  {'user': '葛东琪', 'musicName': '/assets/music/悬溺.mp3'},
-  {'user': 'Alan Walker', 'musicName': '/assets/music/fade.mp3'},
+List<Map<String, dynamic>> musicDataList = [
+  {
+    'musicName': '我好像在哪见过你',
+    'user': '薛之谦',
+    'musicPath': 'assets/music/我好像在哪见过你.mp3'
+  },
+  {
+    'musicName': '那是你离开北京的生活',
+    'user': '薛之谦',
+    'musicPath': 'assets/music/那是你离开北京的生活.mp3'
+  },
+  {'musicName': '溯', 'user': '马吟吟', 'musicPath': 'assets/music/溯.mp3'},
+  {'musicName': '悬溺', 'user': '葛东琪', 'musicPath': 'assets/music/悬溺.mp3'},
+  {
+    'musicName': 'fade',
+    'user': 'Alan Walker',
+    'musicPath': 'assets/music/fade.mp3'
+  },
 ];

@@ -153,12 +153,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               // ),
               )),
       const SizedBox(width: 15),
-      const Hero(
-          tag: 'next',
-          child: Icon(
-            FontAwesomeIcons.forward,
-            color: tFontColor,
-          )),
+      GestureDetector(
+        onTap: () {
+          musicStatusx.playNext();
+        },
+        child: const Hero(
+            tag: 'next',
+            child: Icon(
+              FontAwesomeIcons.forward,
+              color: tFontColor,
+            )),
+      ),
       const SizedBox(width: 5),
     ]);
   }

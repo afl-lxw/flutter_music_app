@@ -105,12 +105,12 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
           width: playWidth,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(userImg), fit: BoxFit.cover)),
+                  image: AssetImage(albumImg), fit: BoxFit.cover)),
         ),
         // Positioned.fill(
         ClipRect(
             child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50), // 模糊效果
+          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25), // 模糊效果
           child: ColorFiltered(
             colorFilter: ColorFilter.mode(
               const Color.fromARGB(255, 65, 65, 65).withOpacity(0.1), // 颜色混合效果
@@ -159,16 +159,16 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                           decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color.fromARGB(255, 65, 65, 65)
+                                  color: Color.fromARGB(255, 35, 35, 35)
                                       .withOpacity(0.5),
-                                  spreadRadius: 5,
+                                  spreadRadius: 6,
                                   blurRadius: 5,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                               borderRadius: BorderRadius.circular(20),
-                              image:
-                                  DecorationImage(image: AssetImage(userImg)))),
+                              image: DecorationImage(
+                                  image: AssetImage(albumImg)))),
                     )),
               ),
             ),
@@ -269,10 +269,15 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(
-                  FontAwesomeIcons.backward,
-                  size: 32,
-                  color: Color.fromARGB(255, 232, 232, 232),
+                GestureDetector(
+                  onTap: () {
+                    musicStatusx.playPrevious();
+                  },
+                  child: const Icon(
+                    FontAwesomeIcons.backward,
+                    size: 32,
+                    color: Color.fromARGB(255, 232, 232, 232),
+                  ),
                 ),
                 GestureDetector(
                     onTap: () async {
@@ -304,14 +309,19 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                         )
                         // );
                         )),
-                const Hero(
-                  tag: 'next',
-                  child: Icon(
-                    FontAwesomeIcons.forward,
-                    size: 32,
-                    color: Color.fromARGB(255, 232, 232, 232),
+                GestureDetector(
+                  onTap: () {
+                    musicStatusx.playNext();
+                  },
+                  child: const Hero(
+                    tag: 'next',
+                    child: Icon(
+                      FontAwesomeIcons.forward,
+                      size: 32,
+                      color: Color.fromARGB(255, 232, 232, 232),
+                    ),
                   ),
-                )
+                ),
               ]),
         ),
         Container(
