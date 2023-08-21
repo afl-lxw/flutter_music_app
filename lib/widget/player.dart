@@ -76,7 +76,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   Row _PlayRow(BuildContext context, MusicStatusX musicStatusx) {
     // final musicStatus = Provider.of<MusicStatus>(context);
-
+    final getMusicInfo = musicStatusx.getMusicInfo;
     return Row(children: [
       Hero(
           transitionOnUserGestures: true,
@@ -109,16 +109,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   spreadRadius: 0, // 扩散半径
                 ),
               ],
-              image: DecorationImage(image: AssetImage(userImg)),
+              image: DecorationImage(
+                  image: AssetImage('${getMusicInfo['imgAvatar']}')),
             ),
           )),
       const SizedBox(width: 10),
-      const Expanded(
+      Expanded(
           child: Hero(
         tag: 'PlayName',
         child: Text(
-          'Black Magic',
-          style: TextStyle(
+          '${getMusicInfo['musicName']}',
+          style: const TextStyle(
             color: tFontColor,
           ),
         ),

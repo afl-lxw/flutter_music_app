@@ -11,24 +11,31 @@ class MusicStatusXBinding implements Bindings {
   }
 }
 
+// 播放音频的状态
+enum SDAudioPlayerState {
+  idle, // 默认
+  loading, // 加载中
+  buffering, // 缓存中
+  ready, // 可播放
+  completed, // 播放完成
+}
+
 class MusicStatusX extends GetxController {
   RxString _musicStatus = RxString('off'); // 使用RxString来管理状态  off
   late AudioPlayer _player; // Declare the _player variable
   late List<Map<String, dynamic>> musicData;
   late ConcatenatingAudioSource playlist;
-  var currentIndex = 0.obs; // Using Getx to manage the current index
+  var currentIndex = 0; // Using Getx to manage the current index
   var isShuffle = false.obs; // Using Getx to manage shuffle mode
   var loopMode = LoopMode.off.obs; // Using Getx to manage loop mode
+  var isRandomPlaying = false.obs; // Using Getx to manage random playing state
 
+  Rx<Map<String, dynamic>> currentMusicInfo =
+      Rx<Map<String, dynamic>>({}); // 当前歌曲信息
+// -----------------------------------------------------------------
   void initPlayer() async {
     _player = AudioPlayer(); // Initialize the _player in the constructor
-    updatePlayList(musicDataList);
-
-    _player.playerStateStream.listen((playerState) {
-      if (playerState.processingState == ProcessingState.completed) {
-        playNext();
-      }
-    });
+    await updatePlayList(musicDataList);
 
     update(); // 通知UI刷新
   }
@@ -38,31 +45,72 @@ class MusicStatusX extends GetxController {
     _player.dispose();
     super.dispose();
   }
+// -----------------------------------------------------------------
 
+  // 当前自定义播放状态
   RxString get getStatus => _musicStatus;
+  // 当前播放状态
+  PlayerState get getPlayStatus => getPlay.playerState;
+  // 当前实例
   AudioPlayer get getPlay => _player;
-  Map get getMusicInfo => musicData[currentIndex as int];
+  // 获取当前播放
+  int? get getCurrentIndex => _player.currentIndex;
+  // 获取单歌曲信息
+  Map<String, dynamic> get getMusicInfo => musicData[getCurrentIndex as int];
+  // 获取当前播放列表
+  ConcatenatingAudioSource get getCurrentPlaylist => playlist;
+  // 获取当前是否是随机播放模式
+  bool get isShuffleMode => _player.shuffleModeEnabled;
+  // 获取当前循环模式
+  LoopMode get getCurrentLoopMode => _player.loopMode;
+// -----------------------------------------------------------------
+
+  // 更新当前歌曲信息
+  void updateCurrentMusicInfo() {
+    final currentIndex = _player.currentIndex;
+    if (currentIndex != null) {
+      currentMusicInfo.value = musicData[currentIndex];
+    }
+    update(); // 通知UI刷新
+  }
 
   // 更新当前播放列表
   Future<void> updatePlayList(list) async {
     musicData = [...list];
+    print(musicData);
     List<AudioSource> audioSources = musicData.map((data) {
       return AudioSource.asset(data['musicPath']);
     }).toList();
+    print('forward----${audioSources}');
     audioSources.shuffle();
+    print('before----${audioSources}');
+
     playlist = ConcatenatingAudioSource(
-      // Start loading next item just before reaching it
       useLazyPreparation: true,
-      // Customise the shuffle algorithm
-      // shuffleOrder: DefaultShuffleOrder(),
+      shuffleOrder: DefaultShuffleOrder(),
       children: audioSources,
     );
-    _player.setAudioSource(playlist);
+    try {
+      await _player.setAudioSource(playlist,
+          initialIndex: currentIndex, initialPosition: Duration.zero);
+    } catch (e) {
+      print(e);
+    }
+
+    // 自动播放下一首
+    _player.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        playNext();
+      }
+    });
+    update(); // 通知UI刷新
   }
 
   //  播放
   Future<void> play() async {
     getPlay.play();
+    updateCurrentMusicInfo();
+
     setNewStatus(RxString('on'));
   }
 
@@ -70,6 +118,7 @@ class MusicStatusX extends GetxController {
   Future<void> pause() async {
     getPlay.pause();
     setNewStatus(RxString('off'));
+    print('index------>${getPlay.playerState}');
   }
 
   //  更新播放状态
@@ -80,35 +129,26 @@ class MusicStatusX extends GetxController {
 
   //  下一首
   Future<void> playNext() async {
-    // await _player.seekToNext();
-    if (currentIndex.value < musicData.length - 1) {
-      currentIndex++;
-    } else {
-      currentIndex.value = 0;
-    }
-    await _player.seek(Duration.zero, index: currentIndex.value);
-    await _player.play();
+    await _player.seekToNext();
+    updateCurrentMusicInfo();
+    print('index------>${getCurrentIndex}');
   }
 
   //  播放上一首
   Future<void> playPrevious() async {
-    // await _player.seekToPrevious();
-    if (currentIndex.value > 0) {
-      currentIndex--;
-    } else {
-      currentIndex.value = musicData.length - 1;
-    }
-    await _player.seek(Duration.zero, index: currentIndex.value);
-    await _player.play();
+    await _player.seekToPrevious();
+    updateCurrentMusicInfo();
+    print('index------>${getCurrentIndex}');
   }
 
   // 点击选择切换音乐
   Future<void> playCheckMusic(index) async {
     // await _player.seek(Duration.zero, index: 2);
     if (index >= 0 && index < musicData.length) {
-      currentIndex.value = index;
-      await _player.seek(Duration.zero, index: currentIndex.value);
+      currentIndex = index;
+      await _player.seek(Duration.zero, index: currentIndex);
       await _player.play();
+      updateCurrentMusicInfo();
     }
   }
 
@@ -116,11 +156,9 @@ class MusicStatusX extends GetxController {
   Future<void> toggleShuffle() async {
     isShuffle.toggle();
     if (isShuffle.value) {
-      // await _player.setShuffleModeEnabled(true);
-      _player.shuffle();
+      await _player.setShuffleModeEnabled(true);
     } else {
-      // await _player.setShuffleModeEnabled(false);
-      // _player.clearShuffleOrder();
+      await _player.setShuffleModeEnabled(false);
     }
   }
 

@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_music_app/components/IconWithTapAnimation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 // import 'package:provider/provider.dart';
@@ -97,6 +98,8 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
 
   Scaffold _Play_Scaffold(
       double playHeight, double playWidth, MusicStatusX musicStatusx) {
+    final getMusicInfo = musicStatusx.getMusicInfo;
+
     return Scaffold(
         body: Stack(
       children: [
@@ -105,7 +108,8 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
           width: playWidth,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(albumImg), fit: BoxFit.cover)),
+                  image: AssetImage('${getMusicInfo['imgAvatar']}'),
+                  fit: BoxFit.cover)),
         ),
         // Positioned.fill(
         ClipRect(
@@ -154,21 +158,39 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                     child: Hero(
                       tag: 'playImg',
                       child: Container(
-                          width: 280,
-                          height: 280,
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromARGB(255, 35, 35, 35)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 6,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
-                                  image: AssetImage(albumImg)))),
+                        width: 280,
+                        height: 280,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 35, 35, 35)
+                                  .withOpacity(0.5),
+                              spreadRadius: 6,
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          borderRadius: BorderRadius.circular(20),
+                          // image: DecorationImage(
+                          //     colorFilter: ColorFilter.mode(
+                          //         Colors.black.withOpacity(0.1),
+                          //         BlendMode.srcATop),
+                          //     image: AssetImage(
+                          //         '${getMusicInfo['imgAvatar']}'))
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            '${getMusicInfo['imgAvatar']}',
+                            width: 280,
+                            height: 280,
+                            fit: BoxFit.cover, // 使用 BoxFit.cover 实现图片适应并撑满容器
+                            alignment: Alignment.center, // 图片居中显示
+                            colorBlendMode: BlendMode.srcATop, // 混合模式
+                            // color: Colors.black.withOpacity(0.1), // 颜色滤镜
+                          ),
+                        ),
+                      ),
                     )),
               ),
             ),
@@ -189,6 +211,7 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
 
   Container _Albums(MusicStatusX musicStatusx) {
     // final musicStatus = Provider.of<MusicStatus>(context);
+    final getMusicInfo = musicStatusx.getMusicInfo;
 
     return Container(
       padding: const EdgeInsets.only(left: 30, right: 30),
@@ -205,15 +228,15 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                 Hero(
                   tag: 'PlayName',
                   child: Text(
-                    ' ${musicStatusx.getStatus}',
+                    '${getMusicInfo['musicName']}',
                     style: const TextStyle(
                         color: tFontColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 18),
                   ),
                 ),
-                const Text('Alan Walker',
-                    style: TextStyle(
+                Text('${getMusicInfo['user']}',
+                    style: const TextStyle(
                         color: tFontColorGrey,
                         fontWeight: FontWeight.w500,
                         fontSize: 16)),
@@ -237,6 +260,9 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
   Column PlayContainer(BuildContext context, MusicStatusX musicStatusx) {
     double playWidth = MediaQuery.of(context).size.width;
     // final musicStatus = Provider.of<MusicStatus>(context);
+    final leftScale = Rx<double>(1.0);
+    final rightScale = Rx<double>(1.0);
+
     return Column(
       children: [
         Container(
@@ -269,14 +295,16 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
+                InkWell(
                   onTap: () {
                     musicStatusx.playPrevious();
                   },
-                  child: const Icon(
-                    FontAwesomeIcons.backward,
-                    size: 32,
-                    color: Color.fromARGB(255, 232, 232, 232),
+                  child: IconWithTapAnimation(
+                    icon: const Icon(
+                      FontAwesomeIcons.backward,
+                      size: 32,
+                      color: Color.fromARGB(255, 232, 232, 232),
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -284,8 +312,6 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                       musicStatusx.getStatus == 'off'
                           ? await musicStatusx.play()
                           : await musicStatusx.pause();
-
-                      print(' ----> ${musicStatusx.getStatus} ');
                     },
                     child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 100),
@@ -313,13 +339,17 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                   onTap: () {
                     musicStatusx.playNext();
                   },
-                  child: const Hero(
-                    tag: 'next',
-                    child: Icon(
+                  child:
+                      // const Hero(
+                      //   tag: 'next',
+                      //   child:
+                      IconWithTapAnimation(
+                    icon: const Icon(
                       FontAwesomeIcons.forward,
                       size: 32,
                       color: Color.fromARGB(255, 232, 232, 232),
                     ),
+                    // ),
                   ),
                 ),
               ]),

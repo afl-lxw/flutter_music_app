@@ -21,18 +21,43 @@ List<Map<String, dynamic>> musicDataList = [
   {
     'musicName': '我好像在哪见过你',
     'user': '薛之谦',
-    'musicPath': 'assets/music/我好像在哪见过你.mp3'
+    'musicPath': 'assets/music/我好像在哪见过你.mp3',
+    'imgAvatar': 'assets/images/albums/1.png'
   },
   {
     'musicName': '那是你离开北京的生活',
     'user': '薛之谦',
-    'musicPath': 'assets/music/那是你离开北京的生活.mp3'
+    'musicPath': 'assets/music/那是你离开北京的生活.mp3',
+    'imgAvatar': 'assets/images/albums/2.png'
   },
-  {'musicName': '溯', 'user': '马吟吟', 'musicPath': 'assets/music/溯.mp3'},
-  {'musicName': '悬溺', 'user': '葛东琪', 'musicPath': 'assets/music/悬溺.mp3'},
+  {
+    'musicName': '溯',
+    'user': '马吟吟',
+    'musicPath': 'assets/music/溯.mp3',
+    'imgAvatar': 'assets/images/albums/3.png'
+  },
+  {
+    'musicName': '悬溺',
+    'user': '葛东琪',
+    'musicPath': 'assets/music/悬溺.mp3',
+    'imgAvatar': 'assets/images/albums/4.png'
+  },
   {
     'musicName': 'fade',
     'user': 'Alan Walker',
-    'musicPath': 'assets/music/fade.mp3'
+    'musicPath': 'assets/music/fade.mp3',
+    'imgAvatar': 'assets/images/albums/5.png'
   },
 ];
+
+class MusicData {
+  final String musicName;
+  final String user;
+  final String musicPath;
+
+  MusicData({
+    required this.musicName,
+    required this.user,
+    required this.musicPath,
+  });
+}

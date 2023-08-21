@@ -22,14 +22,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => CounterModel()),
         // ChangeNotifierProvider(create: (context) => MusicStatus()),
-        FutureProvider<MusicStatus>(
-          create: (BuildContext context) async {
-            final musicStatus = MusicStatus(); // Initialize MusicStatus
-            await musicStatus.getPlay.setAsset('assets/music/悬溺.mp3');
-            return musicStatus;
-          },
-          initialData: MusicStatus(),
-        ),
+        // FutureProvider<MusicStatus>(
+        //   create: (BuildContext context) async {
+        //     final musicStatus = MusicStatus(); // Initialize MusicStatus
+        //     await musicStatus.getPlay.setAsset('assets/music/悬溺.mp3');
+        //     return musicStatus;
+        //   },
+        //   initialData: MusicStatus(),
+        // ),
       ],
       child: GetMaterialApp(
         initialBinding: MusicStatusXBinding(), // 绑定控制器
