@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_app/data/color.dart';
 import 'package:flutter_music_app/getx/music/musicStatus.dart';
-import 'package:flutter_music_app/provider/musicStatus.dart';
+// import 'package:flutter_music_app/provider/musicStatus.dart';
 import 'package:flutter_music_app/provider/tab_index.dart';
 import 'package:flutter_music_app/router/router.dart' as MyAppRouter;
 import 'package:provider/provider.dart';

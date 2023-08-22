@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:flutter_music_app/data/color.dart';
 import 'package:flutter_music_app/data/images.dart';
 import 'package:flutter_music_app/getx/music/musicStatus.dart';
-import 'package:flutter_music_app/provider/musicStatus.dart';
 
 class PlayContainerWidget extends StatefulWidget {
   const PlayContainerWidget({
@@ -295,21 +294,21 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                InkWell(
-                  onTap: () {
-                    musicStatusx.playPrevious();
-                  },
+                GestureDetector(
                   child: IconWithTapAnimation(
                     icon: const Icon(
                       FontAwesomeIcons.backward,
                       size: 32,
                       color: Color.fromARGB(255, 232, 232, 232),
                     ),
+                    onTap: () {
+                      musicStatusx.playPrevious();
+                    },
                   ),
                 ),
                 GestureDetector(
                     onTap: () async {
-                      musicStatusx.getStatus == 'off'
+                      musicStatusx.getStatus == false
                           ? await musicStatusx.play()
                           : await musicStatusx.pause();
                     },
@@ -326,8 +325,8 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                             //   tag: 'play',
                             //   child:
                             Icon(
-                          key: ValueKey<RxString>(musicStatusx.getStatus),
-                          musicStatusx.getStatus == 'on'
+                          key: ValueKey<RxBool>(musicStatusx.getStatus),
+                          musicStatusx.getStatus == true
                               ? FontAwesomeIcons.pause
                               : FontAwesomeIcons.play,
                           size: 34,
@@ -336,9 +335,6 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                         // );
                         )),
                 GestureDetector(
-                  onTap: () {
-                    musicStatusx.playNext();
-                  },
                   child:
                       // const Hero(
                       //   tag: 'next',
@@ -349,6 +345,9 @@ class _PlayContainerWidgetState extends State<PlayContainerWidget>
                       size: 32,
                       color: Color.fromARGB(255, 232, 232, 232),
                     ),
+                    onTap: () {
+                      musicStatusx.playNext();
+                    },
                     // ),
                   ),
                 ),

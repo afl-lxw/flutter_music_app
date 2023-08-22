@@ -3,7 +3,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_app/data/color.dart';
 import 'package:flutter_music_app/data/images.dart';
-import 'package:flutter_music_app/provider/musicStatus.dart';
 import 'package:flutter_music_app/widget/myClipper.dart';
 import 'package:flutter_music_app/widget/play/playContainer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,9 +32,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     double displayWidth = MediaQuery.of(context).size.width;
 
     return GetBuilder<MusicStatusX>(builder: (musicStatusx) {
-      return Obx(() {
-        return _guestureSelf(context, displayWidth, musicStatusx);
-      });
+      // return Obx(() {
+      return _guestureSelf(context, displayWidth, musicStatusx);
+      // });
     });
   }
 
@@ -76,25 +75,14 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   Row _PlayRow(BuildContext context, MusicStatusX musicStatusx) {
     // final musicStatus = Provider.of<MusicStatus>(context);
-    final getMusicInfo = musicStatusx.getMusicInfo;
+
+    final controller = Get.find<MusicStatusX>();
+    final getMusicInfo = controller.getMusicInfo;
+
     return Row(children: [
       Hero(
           transitionOnUserGestures: true,
           tag: 'playImg',
-          // flightShuttleBuilder: (BuildContext flightContext,
-          //     Animation<double> animation,
-          //     HeroFlightDirection flightDirection,
-          //     BuildContext fromHeroContext,
-          //     BuildContext toHeroContext) {
-          //   // 创建自定义过渡的 widget
-          //   return FadeTransition(
-          //       opacity: animation,
-          //       child: Container(
-          //         width: 100,
-          //         height: 100,
-          //         color: Colors.transparent, // 使用透明背景色
-          //       ));
-          // },
           child: Container(
             width: 45,
             height: 45,
@@ -118,7 +106,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           child: Hero(
         tag: 'PlayName',
         child: Text(
-          '${getMusicInfo['musicName']}',
+          '${getMusicInfo['musicName']}-- ${controller.getPlayStatus.value}',
           style: const TextStyle(
             color: tFontColor,
           ),
@@ -126,10 +114,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       )),
       GestureDetector(
           onTap: () async {
-            if (musicStatusx.getStatus == 'off') {
-              await musicStatusx.play();
+            print(
+                'musicStatusx.getStatus----${controller.getPlayStatus.value}');
+            if (!controller.getPlayStatus.value) {
+              controller.play();
             } else {
-              await musicStatusx.pause();
+              controller.pause();
             }
           },
           child: AnimatedSwitcher(
@@ -145,8 +135,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   //     tag: 'play',
                   //     child:
                   Icon(
-                key: ValueKey<RxString>(musicStatusx.getStatus),
-                musicStatusx.getStatus == 'on'
+                key: ValueKey<bool>(musicStatusx.getPlayStatus.value),
+                musicStatusx.getPlayStatus.value == true
                     ? FontAwesomeIcons.pause
                     : FontAwesomeIcons.play,
                 color: tFontColor,

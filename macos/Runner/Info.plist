@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>... explain why the app uses the microphone here ...</string>
 </dict>
 </plist>

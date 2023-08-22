@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class IconWithTapAnimation extends StatefulWidget {
   final Icon icon;
+  final VoidCallback onTap; // Add onTap callback
 
-  IconWithTapAnimation({required this.icon});
+  IconWithTapAnimation({required this.icon, required this.onTap});
 
   @override
   _IconWithTapAnimationState createState() => _IconWithTapAnimationState();
@@ -22,6 +23,7 @@ class _IconWithTapAnimationState extends State<IconWithTapAnimation> {
     setState(() {
       scaleFactor = 1.0;
     });
+    widget.onTap();
   }
 
   @override
