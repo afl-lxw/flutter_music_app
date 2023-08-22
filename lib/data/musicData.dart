@@ -22,7 +22,7 @@ List<Map<String, dynamic>> musicDataList = [
     'musicName': '我好像在哪见过你',
     'user': '薛之谦',
     'musicPath': 'assets/music/我好像在哪见过你.mp3',
-    'imgAvatar': 'assets/images/albums/1.png'
+    'imgAvatar': 'assets/images/albums/6.png'
   },
   {
     'musicName': '那是你离开北京的生活',
